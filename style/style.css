@@ -47,7 +47,7 @@ body {
     transform: rotateY(180deg);
 }
 .card_front {
-    transform: rotateY(180deg);
+  transform: rotateY(180deg);
   background-color: #101c2c;
 
 }
