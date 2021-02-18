@@ -1,111 +1,69 @@
 const FRONT = "card_front";
 const BACK = "card_back";
-const CARD = 'card'
-const ICON = 'icon'
-let cards = null;
-
-techs = [
-  "bootstrap",
-  "css",
-  "electron",
-  "firebase",
-  "html",
-  "javascript",
-  "jquery",
-  "mongo",
-  "node",
-  "react",
-];
+const CARD = "card";
+const ICON = "icon";
 
 startGame();
 function startGame() {
-  cards = createCardsFromTechs(techs);
-    shufflerCards(cards)
-  inicializeCards(cards)
+  inicializeCards(game.createCardsFromTechs());
 }
 
-function inicializeCards(cards) {
-    let gameBoard = document.getElementById('gameBoard')
+function inicializeCards() {
+  let gameBoard = document.getElementById("gameBoard");
 
-    cards.forEach(card => {
-        console.log(card)
-        cardElement = document.createElement('div')
-        cardElement.id = card.id
-        cardElement.classList.add(CARD)
-        cardElement.dataset.icon = card.icon
+  game.cards.forEach((card) => {
+    console.log(card);
+    cardElement = document.createElement("div");
+    cardElement.id = card.id;
+    cardElement.classList.add(CARD);
+    cardElement.dataset.icon = card.icon;
 
-        createCardContent(card, cardElement)
+    createCardContent(card, cardElement);
 
-        cardElement.addEventListener('click', flipCard)
+    cardElement.addEventListener("click", flipCard);
 
-        gameBoard.appendChild(cardElement)
-    })
-
+    gameBoard.appendChild(cardElement);
+  });
 }
 
-function createCardContent(card, cardElement){
-    createCardFace(FRONT, card, cardElement)
-    createCardFace(BACK, card, cardElement)
-
-
+function createCardContent(card, cardElement) {
+  createCardFace(FRONT, card, cardElement);
+  createCardFace(BACK, card, cardElement);
 }
 
-function createCardFace(face, card, element){
-    let cardElementFace = document.createElement('div')
-    cardElementFace.classList.add(face)
-    if(face === FRONT){
-        let iconElement = document.createElement('img')
-        iconElement.classList.add(ICON)
-        iconElement.src = './images/' + card.icon + '.png'
-        cardElementFace.appendChild(iconElement)
-    }else {
-        cardElementFace.innerHTML = '&lt/&gt'
-    }
-    element.appendChild(cardElementFace)
-}
-
-
-function shufflerCards(cards){
-    let currentIndex = cards.length
-    let randomIndex = 0 
-
-    while(currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex)
-        currentIndex--
-
-        [cards[currentIndex], cards[randomIndex]] = [cards[randomIndex], cards[currentIndex]]
-    }
-}
-
-function createCardsFromTechs(techs) {
-  let cards = [];
-
-  for (let tech of techs) {
-    cards.push(createPairFromTech(tech));
+function createCardFace(face, card, element) {
+  let cardElementFace = document.createElement("div");
+  cardElementFace.classList.add(face);
+  if (face === FRONT) {
+    let iconElement = document.createElement("img");
+    iconElement.classList.add(ICON);
+    iconElement.src = "./images/" + card.icon + ".png";
+    cardElementFace.appendChild(iconElement);
+  } else {
+    cardElementFace.innerHTML = "&lt/&gt";
   }
-
-  return cards.flatMap((card) => card);
+  element.appendChild(cardElementFace);
 }
 
-function createPairFromTech(tech) {
-  return [
-    {
-      id: createIdWithTech(tech),
-      icon: tech,
-      flipped: false,
-    },
-    {
-      id: createIdWithTech(tech),
-      icon: tech,
-      flipped: false,
-    },
-  ];
-}
-
-function createIdWithTech(tech) {
-  return tech + Math.trunc(Math.random() * 1000);
-}
-
-function flipCard(){
-    this.classList.add('flip')
+function flipCard() {
+  if (game.setCard(this.id)) {
+    this.classList.add("flip");
+    if (game.secondCard) {
+      if (game.checkMatch()) {
+        game.clearCards();
+        if(game.checkGameOver()){
+          let gameOverLayer = document.getElementById('gameOver')
+          gameOverLayer.style.display = 'flex'
+        }
+      } else {
+        setTimeout(() => {
+          let firstCardView = document.getElementById(game.firstCard.id);
+          let secondCardView = document.getElementById(game.secondCard.id);
+          firstCardView.classList.remove("flip");
+          secondCardView.classList.remove("flip");
+          game.unflipCards();
+        }, 1000);
+      }
+    }
+  }
 }
