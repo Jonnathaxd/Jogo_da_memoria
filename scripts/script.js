@@ -8,8 +8,16 @@ function startGame() {
   inicializeCards(game.createCardsFromTechs());
 }
 
+function restart(){
+  game.clearCards()
+  startGame()
+  let gameOverLayer = document.getElementById('gameOver')
+  gameOverLayer.style.display = 'none'
+}
+
 function inicializeCards() {
   let gameBoard = document.getElementById("gameBoard");
+  gameBoard.innerHTML = ''
 
   game.cards.forEach((card) => {
     console.log(card);
